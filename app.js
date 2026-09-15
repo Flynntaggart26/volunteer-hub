@@ -363,7 +363,7 @@ function preparePrint(){
       <div><div class="sig-line">Supervisor / Teacher</div></div>
       <div><div class="sig-line">Counselor / Advisor • ${profile.advisor||''}</div></div>
     </div>
-    <div style="padding:10px 20px;font-size:10px;color:#6b7280;border-top:1px solid #e6e7ef">Generated offline by VolunteerHub. Verification ${lastVerification} — scan QR to verify (data is local, not uploaded). “Pending” requires sign-off. Certificate available separately.</div>
+    <div style="padding:10px 20px;font-size:10px;color:#6b7280;border-top:1px solid #e6e7ef">Generated offline by VolunteerHub. Verification ${lastVerification} — scan QR to verify (data is local, not uploaded). “Pending” requires sign-off.</div>
   `;
   // QR — encode verification + hash (MIT qrcodejs)
   setTimeout(()=>{
@@ -373,48 +373,6 @@ function preparePrint(){
     const text=`https://flynntaggart26.github.io/volunteer-hub/?verify=${lastVerification}&h=${approvedH}&n=${encodeURIComponent(profile.name)}`;
     try{ new QRCode(el, {text, width:84, height:84, colorDark:'#0f172a', colorLight:'#ffffff', correctLevel: QRCode.CorrectLevel.M}); } catch(e){ el.textContent='QR error'; }
   }, 80);
-  // also build cert preview hidden
-  buildCertPreview();
-}
-
-function openCertificate(){
-  preparePrint();
-  // ensure cert built
-  setTimeout(()=>{
-    document.getElementById('certModal').style.display='grid';
-    // rebuild QR for cert as well
-    const certQr=document.getElementById('certQr');
-    if(certQr){
-      certQr.innerHTML='';
-      const text=`https://flynntaggart26.github.io/volunteer-hub/?verify=${lastVerification}&h=${activities.filter(a=>a.status==='approved').reduce((s,a)=>s+a.hours,0)}`;
-      try{ new QRCode(certQr, {text, width:72, height:72, colorDark:'#0e7490', colorLight:'#ffffff', correctLevel: QRCode.CorrectLevel.M}); } catch(e){}
-    }
-  }, 120);
-}
-function buildCertPreview(){
-  const approvedH=activities.filter(a=>a.status==='approved').reduce((s,a)=>s+a.hours,0);
-  const v=lastVerification || ('VOL-'+ new Date().getFullYear() +'-XXXX');
-  const sigActivity=activities.find(a=>a.signatureDataUrl);
-  const sigImg=sigActivity? `<img src="${sigActivity.signatureDataUrl}" class="sig-img" style="margin:8px auto 0;display:block">` : '<div style="margin-top:24px;border-top:1px solid #0f172a;padding-top:6px;font-size:10px">Supervisor signature</div>';
-  document.getElementById('certPreview').innerHTML=`
-    <div class="cert">
-      <div class="seal">VOLUNTEER<br>HUB</div>
-      <div style="text-align:center;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#6b7280;font-weight:800">Certificate of Service</div>
-      <h2 style="text-align:center;margin-top:4px">This certifies that</h2>
-      <div style="text-align:center;font-family:Fraunces,serif;font-size:22px;margin-top:6px">${profile.name}</div>
-      <div style="text-align:center;font-size:11px;color:#6b7280">${profile.school} • ${profile.grade}. sınıf • ${profile.studentId}</div>
-      <div style="text-align:center;margin-top:12px;font-size:13px">has completed <b style="font-size:16px;color:#0e7490">${approvedH} hours</b> of approved volunteer & club service</div>
-      <div style="text-align:center;font-size:11px;color:#6b7280;margin-top:4px">Period: ${[...activities].sort((a,b)=>a.date.localeCompare(b.date))[0]?.date||'—'} → ${[...activities].sort((a,b)=>b.date.localeCompare(a.date))[0]?.date||'—'} • Generated ${new Date().toLocaleDateString('en-GB')}</div>
-      <div style="display:flex;justify-content:center;gap:16px;margin-top:14px;flex-wrap:wrap">
-        <div id="certQr" style="width:72px;height:72px;border:1px solid #e6e7ef;border-radius:8px;background:white;display:grid;place-items:center"></div>
-        <div style="font-size:10px;color:#6b7280;text-align:left;max-width:220px">Verification: <b style="color:#0f172a">${v}</b><br>Scan QR to verify.<br><span style="font-size:9px">Not an official government document. Original design by VolunteerHub.</span></div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px;text-align:center">
-        <div>${sigImg}<div style="font-size:10px;color:#6b7280;margin-top:4px">Supervisor</div></div>
-        <div><div style="margin-top:24px;border-top:1px solid #0f172a;padding-top:6px;font-size:10px">Counselor • ${profile.advisor||''}</div></div>
-      </div>
-    </div>
-  `;
 }
 
 function exportCSV(all=false){

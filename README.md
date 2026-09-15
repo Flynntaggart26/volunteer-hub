@@ -36,9 +36,6 @@ Most schools require 80–120 service hours for graduation. Students track them 
 - **QR verification:** each report shows a QR (generated offline via `qrcodejs` MIT) encoding `https://…/?verify=VOL-…&h=...` — counselor can scan to cross-check hours
 - **Photos embedded:** if you added a photo, it appears as 48px thumb in the PDF table — proof without external upload
 
-### 🏅 Service Certificate (NEW)
-- One-click **Generate Certificate** — original design (double border, seal “VOLUNTEER HUB”, not a government diploma copy). Shows name, school, total **approved** hours, period, date, verification code + QR + supervisor signature image. Landscape A4, print-ready. Clearly labeled “Not an official government document.”
-
 ### 🖼️ Photo Evidence — Your Own Photos Only (NEW)
 - File input `accept="image/*"` in Add/Edit — stores as **data URL in localStorage only**, never uploaded. Max 800KB (checked client-side). Preview + thumbnail in Dashboard recent list and PDF. Shows in table as `📷 photo`. You must own the photo; for faces get consent — no stock-photo copying.
 
@@ -101,8 +98,7 @@ We researched each new feature to avoid any copyright / legal risk:
 | 1 | **Photo evidence (local data URL)** | You upload **only photos you took yourself** — you own the copyright. App never uploads to a server; `FileReader` stores a data URL in `localStorage` only. No stock photos are bundled. No third-party copyright is distributed. For photos with people, you must have their consent (GDPR/KVKK: data stays on device, not processed). File size limit prevents abuse. |
 | 2 | **QR verification (qrcodejs MIT)** | Library is **MIT licensed** (permissive, no copyleft). CDN link is credited here + in code comment. QR encodes only a verification URL with hours (`VOL-…`). No trademark — QR is a standard, not a logo. Offline generation, no Google API, no external tracking. |
 | 3 | **Digital signature pad** | **100% original code** (`canvas` + mouse/touch). No `signature_pad` library. The image is **user-drawn**, stored as `image/png` data URL locally. It’s an e-consent mark, not a forgery of an official seal or someone else’s signature. No seal of state is copied. |
-| 4 | **Service certificate** | **Original design** — double border + centered text + “VOLUNTEER HUB” text seal (CSS). **Not a copy** of MEB/Ministry or any university diploma template, no emblem, no Atatürk silhouette, no state coat-of-arms. Explicit footer: “Not an official government document.” So no forgery/impersonation under TCK 204. Your hours are factual, your template is yours. |
-| 5 | **Reflection journal** | Content is **your original writing** — you hold the copyright automatically. App only stores and prints it. No AI-generated or copied essay text is bundled. Helps with authentic Common App essays without plagiarism risk. |
+| 4 | **Reflection journal** | Content is **your original writing** — you hold the copyright automatically. App only stores and prints it. No AI-generated or copied essay text is bundled. Helps with authentic Common App essays without plagiarism risk. |
 
 **General:** No background music, no stock icons, no scraped data. All code is yours (MIT). Student personal data (name, photos, signatures) **never leaves the browser** — no DPA needed, no data-controller risk. If you fork for a school, add a privacy note that photos need consent.
 

@@ -68,8 +68,18 @@ td{padding:9px 8px;border-bottom:1px solid var(--border);vertical-align:top}
 .print-table th{background:#0f172a;color:white;padding:8px 6px;text-align:left}
 .print-table td{padding:7px 6px;border-bottom:1px solid #e6e7ef}
 .print-summary{padding:14px 20px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;background:#f8f9ff;border-top:1px solid var(--border);font-size:12px}
+.sig-pad-wrap{border:1px solid var(--border);border-radius:12px;padding:8px;background:#f8f9ff}
+#sigPad{width:100%;height:140px;border:1px dashed #cbd5e1;border-radius:8px;background:white;touch-action:none;cursor:crosshair;display:block}
+.qr-box{display:flex;gap:12px;align-items:center;padding:10px;background:#f8f9ff;border:1px solid var(--border);border-radius:12px}
+.qr-box #qrCode{width:96px;height:96px;flex-shrink:0;background:white;border:1px solid var(--border);border-radius:8px;display:grid;place-items:center;overflow:hidden}
+.cert{border:8px double #0f172a;border-radius:14px;padding:22px;background:white;position:relative}
+.cert:before{content:'';position:absolute;inset:8px;border:1px solid #cbd5e1;border-radius:8px;pointer-events:none}
+.cert h2{font-family:Fraunces,serif;font-size:22px;text-align:center;letter-spacing:.02em}
+.cert .seal{position:absolute;top:18px;right:18px;width:64px;height:64px;border:2px solid #0e7490;border-radius:999px;display:grid;place-items:center;font-size:10px;font-weight:800;color:#0e7490;transform:rotate(-12deg);opacity:.9}
+.photo-thumb{width:48px;height:48px;border-radius:8px;object-fit:cover;border:1px solid var(--border)}
 .print-sign{padding:18px 20px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;font-size:11px}
 .sig-line{border-top:1px solid var(--text);margin-top:36px;padding-top:6px}
+.sig-img{max-width:160px;max-height:46px;object-fit:contain;margin-top:6px;border:1px solid #e6e7ef;border-radius:6px;background:white;padding:4px}
 @media(max-width:860px){.hero-card{grid-template-columns:1fr}.kpis{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}.row2{grid-template-columns:1fr}}
 @media print{
   .header,.nav,.filters,.wrap>section:not(#report),footer, .btn, .nav-btn{display:none !important}

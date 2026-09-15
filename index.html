@@ -120,15 +120,17 @@
   <section id="report" class="section">
     <div class="card">
       <h3>Report & Signed PDF</h3>
-      <p>Preview below is exactly what prints. Teacher/supervisor signature lines included. Use filters in Log to limit what appears in PDF.</p>
+      <p>Preview below is exactly what prints. Teacher/supervisor signature lines, QR verification, photos and reflections included if present. Use filters in Log to limit what appears in PDF.</p>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
         <button class="btn primary" onclick="preparePrint(); setTimeout(()=>window.print(),200)">🖨 Print / Save as PDF</button>
         <button class="btn" onclick="exportCSV()">⬇ Export filtered CSV</button>
         <button class="btn" onclick="exportCSV(true)">⬇ Export all CSV</button>
+        <button class="btn" style="background:#f8f9ff" onclick="openCertificate()">🏅 Generate Certificate</button>
       </div>
       <div id="printArea" class="print-area">
         <!-- filled by JS -->
       </div>
+      <div id="certArea" class="print-area" style="display:none"></div>
     </div>
   </section>
 </main>
@@ -142,9 +144,13 @@
       <div class="row2"><div class="field"><label>Date *</label><input type="date" id="aDate" required></div><div class="field"><label>Hours *</label><input type="number" id="aHours" min="0" step="0.25" placeholder="e.g., 3.5"></div></div>
       <div class="row2"><div class="field"><label>Organization / Club *</label><input id="aOrg" placeholder="Red Crescent, Debate Club..."></div><div class="field"><label>Category *</label><select id="aCat"><option>Community Service</option><option>Club</option><option>Competition</option><option>Leadership</option><option>Other</option></select></div></div>
       <div class="field"><label>Description *</label><textarea id="aDesc" rows="2" placeholder="What did you do?"></textarea></div>
+      <div class="field"><label>Reflection — What did you learn? (for essays, 150+ chars)</label><textarea id="aReflection" rows="2" placeholder="E.g., I learned to coordinate a team of 8 and communicate with local officials..."></textarea></div>
       <div class="row2"><div class="field"><label>Supervisor name</label><input id="aSup" placeholder="Ms. Ayşe Yılmaz"></div><div class="field"><label>Supervisor email</label><input id="aSupEmail" placeholder="ayse@school.edu.tr"></div></div>
-      <div class="row2"><div class="field"><label>Status</label><select id="aStatus"><option value="pending">Pending</option><option value="approved">Approved</option><option value="rejected">Rejected</option></select></div><div class="field"><label>Evidence file (name)</label><input id="aEvidence" placeholder="photo1.jpg"></div></div>
+      <div class="row2"><div class="field"><label>Status</label><select id="aStatus"><option value="pending">Pending</option><option value="approved">Approved</option><option value="rejected">Rejected</option></select></div><div class="field"><label>Photo evidence — your own photo only (offline, max 800KB)</label><input type="file" id="aPhoto" accept="image/*"><div id="aPhotoPreview" style="margin-top:6px"></div><small style="color:#6b7280;font-size:11px">You must own the photo. Stored only in your browser, never uploaded. Faces need consent.</small></div></div>
+      <div class="field"><label>Supervisor signature — draw with mouse/finger (stored locally, appears on PDF/certificate)</label><div class="sig-pad-wrap"><canvas id="sigPad" width="520" height="140"></canvas><div style="display:flex;gap:8px;margin-top:6px"><button type="button" class="btn" onclick="clearSigPad()">Clear</button><button type="button" class="btn" onclick="saveSigPad()">Save signature</button><span id="sigStatus" style="font-size:11px;color:#6b7280;align-self:center"></span></div></div></div>
       <input type="hidden" id="aId">
+      <input type="hidden" id="aSigData">
+      <input type="hidden" id="aPhotoData">
       <div style="display:flex;gap:8px;margin-top:12px"><button class="btn primary" onclick="saveActivity()" style="flex:1">Save</button><button class="btn" onclick="closeActModal()" style="flex:1">Cancel</button></div>
     </div>
   </div>
@@ -181,6 +187,17 @@
 
 <footer style="max-width:1100px;margin:0 auto;padding:0 20px 24px;color:#8a8aa0;font-size:11px;text-align:center">Offline-first • Data saved in browser (localStorage) • No account needed. Use Export JSON to backup.</footer>
 
+<div id="certModal" class="modal" style="display:none">
+  <div class="modal-card" style="max-width:800px">
+    <button class="x" onclick="document.getElementById('certModal').style.display='none'">✕</button>
+    <h3>Service Certificate</h3>
+    <p style="font-size:12px;color:#6b7280">Original design — not a government document. Verification QR included. Print this page (landscape) for your files.</p>
+    <div id="certPreview" style="margin-top:12px"></div>
+    <div style="display:flex;gap:8px;margin-top:12px"><button class="btn primary" onclick="window.print()" style="flex:1">🖨 Print Certificate</button><button class="btn" onclick="document.getElementById('certModal').style.display='none'" style="flex:1">Close</button></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

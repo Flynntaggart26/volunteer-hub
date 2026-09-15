@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VolunteerHub — Service Hours & Club Activity Tracker</title>
+<meta name="description" content="Offline-first volunteer & club activity tracker for high school students — log hours, manage clubs, get supervisor approval, export signed PDF.">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700&family=Inter:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="header">
+  <div class="head-inner">
+    <div class="logo">
+      <div class="mark">VH</div>
+      <div>
+        <h1>VolunteerHub</h1>
+        <p>Service Hours & Club Activity Tracker</p>
+      </div>
+    </div>
+    <div class="head-actions">
+      <div class="profile-mini" id="profileMini"></div>
+      <button class="btn" onclick="openProfileModal()">⚙ Profile</button>
+      <button class="btn" onclick="exportJSON()">↗ Export JSON</button>
+      <button class="btn" onclick="document.getElementById('importFile').click()">↙ Import</button>
+      <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
+    </div>
+  </div>
+</header>
+
+<nav class="nav">
+  <button class="nav-btn active" data-tab="dashboard" onclick="switchTab('dashboard')">📊 Dashboard</button>
+  <button class="nav-btn" data-tab="log" onclick="switchTab('log')">📝 Log Hours</button>
+  <button class="nav-btn" data-tab="clubs" onclick="switchTab('clubs')">🏫 Clubs</button>
+  <button class="nav-btn" data-tab="report" onclick="switchTab('report')">📄 Report & PDF</button>
+</nav>
+
+<main class="wrap">
+  <!-- DASHBOARD -->
+  <section id="dashboard" class="section active">
+    <div class="hero">
+      <div class="hero-card">
+        <div>
+          <h2>Your service, verified.</h2>
+          <p>Track every club meeting and community service hour — with supervisor approval and a one-click signed PDF for your counselor. Offline, private, no account needed.</p>
+          <div class="chips"><span class="chip">✓ Offline-first</span><span class="chip">✓ Teacher sign-off</span><span class="chip">✓ PDF • CSV • JSON</span></div>
+        </div>
+        <div class="hero-side">
+          <div class="ring-wrap">
+            <svg width="110" height="110" viewBox="0 0 110 110"><circle cx="55" cy="55" r="48" stroke="#e6e7ef" stroke-width="10" fill="none"/><circle id="ring" cx="55" cy="55" r="48" stroke="#0e7490" stroke-width="10" fill="none" stroke-linecap="round" stroke-dasharray="301.59" stroke-dashoffset="301.59" transform="rotate(-90 55 55)"/></svg>
+            <div class="ring-text"><b id="ringPct">0%</b><small>of <span id="ringTarget">100</span>h</small></div>
+          </div>
+          <div>
+            <div style="font-size:12px;color:#6b6b84">Target progress</div>
+            <div style="font-family:Fraunces,serif;font-size:18px" id="ringLabel">0 / 100 h</div>
+            <div style="font-size:11px;color:#6b6b84" id="ringSub">Set target in Profile</div>
+            <button class="btn primary" style="margin-top:8px;width:100%" onclick="switchTab('log')">+ Log hours</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="kpis" id="kpis"></div>
+
+    <div class="grid2">
+      <div class="card">
+        <h3>Hours by category</h3>
+        <p>Approved hours only</p>
+        <div id="catChart" class="bar-chart"></div>
+      </div>
+      <div class="card">
+        <h3>Monthly trend (last 6 mo)</h3>
+        <p>Approved hours</p>
+        <div id="monthChart" class="bar-chart"></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <h3>Recent activities</h3>
+      <div id="recentList" style="margin-top:10px;display:grid;gap:8px"></div>
+    </div>
+  </section>
+
+  <!-- LOG -->
+  <section id="log" class="section">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center">
+        <h3>Activity Log</h3>
+        <button class="btn primary" onclick="openActivityModal()">+ Add activity</button>
+      </div>
+      <div class="filters">
+        <div class="field"><label>Search</label><input id="q" placeholder="Organization, description..." oninput="renderLog()"></div>
+        <div class="field"><label>Category</label><select id="fCat" onchange="renderLog()"><option value="all">All</option><option>Community Service</option><option>Club</option><option>Competition</option><option>Leadership</option><option>Other</option></select></div>
+        <div class="field"><label>Status</label><select id="fStatus" onchange="renderLog()"><option value="all">All</option><option value="pending">Pending</option><option value="approved">Approved</option><option value="rejected">Rejected</option></select></div>
+        <div class="field"><label>From</label><input type="date" id="fFrom" onchange="renderLog()"></div>
+        <div class="field"><label>To</label><input type="date" id="fTo" onchange="renderLog()"></div>
+      </div>
+      <div style="overflow:auto;margin-top:12px;border:1px solid #e8e9ef;border-radius:12px">
+        <table>
+          <thead><tr><th>Date</th><th>Organization</th><th>Category</th><th>Hours</th><th>Description</th><th>Supervisor</th><th>Status</th><th></th></tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+      <div style="margin-top:10px;font-size:12px;color:#6b6b84" id="logMeta"></div>
+    </div>
+  </section>
+
+  <!-- CLUBS -->
+  <section id="clubs" class="section">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center">
+        <h3>Clubs & Roles</h3>
+        <button class="btn primary" onclick="openClubModal()">+ Add club</button>
+      </div>
+      <div id="clubsGrid" style="margin-top:12px;display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px"></div>
+    </div>
+  </section>
+
+  <!-- REPORT -->
+  <section id="report" class="section">
+    <div class="card">
+      <h3>Report & Signed PDF</h3>
+      <p>Preview below is exactly what prints. Teacher/supervisor signature lines included. Use filters in Log to limit what appears in PDF.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+        <button class="btn primary" onclick="preparePrint(); setTimeout(()=>window.print(),200)">🖨 Print / Save as PDF</button>
+        <button class="btn" onclick="exportCSV()">⬇ Export filtered CSV</button>
+        <button class="btn" onclick="exportCSV(true)">⬇ Export all CSV</button>
+      </div>
+      <div id="printArea" class="print-area">
+        <!-- filled by JS -->
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- Activity Modal -->
+<div id="actModal" class="modal" style="display:none">
+  <div class="modal-card">
+    <button class="x" onclick="closeActModal()">✕</button>
+    <h3 id="actModalTitle">Add activity</h3>
+    <div class="form">
+      <div class="row2"><div class="field"><label>Date *</label><input type="date" id="aDate" required></div><div class="field"><label>Hours *</label><input type="number" id="aHours" min="0" step="0.25" placeholder="e.g., 3.5"></div></div>
+      <div class="row2"><div class="field"><label>Organization / Club *</label><input id="aOrg" placeholder="Red Crescent, Debate Club..."></div><div class="field"><label>Category *</label><select id="aCat"><option>Community Service</option><option>Club</option><option>Competition</option><option>Leadership</option><option>Other</option></select></div></div>
+      <div class="field"><label>Description *</label><textarea id="aDesc" rows="2" placeholder="What did you do?"></textarea></div>
+      <div class="row2"><div class="field"><label>Supervisor name</label><input id="aSup" placeholder="Ms. Ayşe Yılmaz"></div><div class="field"><label>Supervisor email</label><input id="aSupEmail" placeholder="ayse@school.edu.tr"></div></div>
+      <div class="row2"><div class="field"><label>Status</label><select id="aStatus"><option value="pending">Pending</option><option value="approved">Approved</option><option value="rejected">Rejected</option></select></div><div class="field"><label>Evidence file (name)</label><input id="aEvidence" placeholder="photo1.jpg"></div></div>
+      <input type="hidden" id="aId">
+      <div style="display:flex;gap:8px;margin-top:12px"><button class="btn primary" onclick="saveActivity()" style="flex:1">Save</button><button class="btn" onclick="closeActModal()" style="flex:1">Cancel</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- Club Modal -->
+<div id="clubModal" class="modal" style="display:none">
+  <div class="modal-card">
+    <button class="x" onclick="closeClubModal()">✕</button>
+    <h3>Add club</h3>
+    <div class="form">
+      <div class="field"><label>Club name *</label><input id="cName" placeholder="MUN Club"></div>
+      <div class="field"><label>Role</label><input id="cRole" placeholder="Member, President..."></div>
+      <div class="field"><label>Joined</label><input type="date" id="cJoined"></div>
+      <div style="display:flex;gap:8px;margin-top:12px"><button class="btn primary" onclick="saveClub()" style="flex:1">Save</button><button class="btn" onclick="closeClubModal()" style="flex:1">Cancel</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- Profile Modal -->
+<div id="profileModal" class="modal" style="display:none">
+  <div class="modal-card">
+    <button class="x" onclick="closeProfileModal()">✕</button>
+    <h3>Student profile</h3>
+    <div class="form">
+      <div class="field"><label>Full name *</label><input id="pName" placeholder="Ege C."></div>
+      <div class="field"><label>School *</label><input id="pSchool" placeholder="Atatürk Anadolu Lisesi"></div>
+      <div class="row2"><div class="field"><label>Grade</label><input id="pGrade" placeholder="11"></div><div class="field"><label>Student ID</label><input id="pId" placeholder="12345"></div></div>
+      <div class="row2"><div class="field"><label>Target hours</label><input type="number" id="pTarget" min="0" value="100"></div><div class="field"><label>Advisor / Counselor</label><input id="pAdvisor" placeholder="Mr. Demir"></div></div>
+      <div style="display:flex;gap:8px;margin-top:12px"><button class="btn primary" onclick="saveProfile()" style="flex:1">Save</button><button class="btn" onclick="closeProfileModal()" style="flex:1">Cancel</button></div>
+    </div>
+  </div>
+</div>
+
+<footer style="max-width:1100px;margin:0 auto;padding:0 20px 24px;color:#8a8aa0;font-size:11px;text-align:center">Offline-first • Data saved in browser (localStorage) • No account needed. Use Export JSON to backup.</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
